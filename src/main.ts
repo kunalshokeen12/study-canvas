@@ -183,7 +183,28 @@ function toPagePoint(e: PointerEvent, view: PageView): Point {
   return { x: pt.x, y: pt.y, p: resolvePressure(e), t: e.timeStamp };
 }
 
+// getStroke() (perfect-freehand) recomputes the FULL outline from scratch
+// on every call. Doing that once per pointermove is fine at first but gets
+// slower as a stroke grows, and can fall behind the tablet's input rate
+// (Chrome then queues events and only paints once the backlog drains at
+// pointerup -- i.e. "ink only appears when you stop writing"). Coalesce to
+// one recompute per animation frame instead of one per input event.
+let liveRafHandle: number | null = null;
+let pendingLiveDraw: { view: PageView; stroke: Stroke | null } | null = null;
+
 function redrawLive(view: PageView, stroke: Stroke | null): void {
+  pendingLiveDraw = { view, stroke };
+  if (liveRafHandle !== null) return;
+  liveRafHandle = requestAnimationFrame(() => {
+    liveRafHandle = null;
+    const pending = pendingLiveDraw;
+    pendingLiveDraw = null;
+    if (!pending) return;
+    paintLive(pending.view, pending.stroke);
+  });
+}
+
+function paintLive(view: PageView, stroke: Stroke | null): void {
   const dpr = cappedDPR(window.devicePixelRatio || 1);
   const zoom = getViewport(view).zoom || 1;
   const ctx = view.liveCtx;
