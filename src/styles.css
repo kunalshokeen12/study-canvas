@@ -68,7 +68,6 @@ html, body {
   overflow-y: auto;
   overflow-x: hidden;
   position: relative;
-  touch-action: pan-y pinch-zoom;
   background: #444;
 }
 
@@ -82,8 +81,16 @@ html, body {
   -webkit-touch-callout: none;
 }
 
-.sc-page.sc-pen-active canvas,
-.sc-page.sc-pen-active {
+/*
+ * Always none, unconditionally -- NOT toggled by a pen-active class.
+ * touch-action is decided by the browser at the first contact of a touch
+ * point and is not re-evaluated afterward, so a palm that lands before the
+ * pen tip does (very common: the hand settles into writing position first)
+ * would otherwise get "pan" locked in for that whole gesture regardless of
+ * what the JS does a moment later. Scrolling/panning is instead driven
+ * manually in main.ts, gated on the pen NOT being active at each step.
+ */
+.sc-input-layer {
   touch-action: none;
 }
 

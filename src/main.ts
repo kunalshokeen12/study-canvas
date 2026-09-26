@@ -59,6 +59,7 @@ let currentEraserGesture: EraserGesture | null = null;
 let activePageId: string | null = null;
 let askStart: Point | null = null;
 let askOverlayEl: HTMLDivElement | null = null;
+let anyPenActive = false;
 
 const toolbarApi = createToolbar(toolbarEl, {
   onToolChange: (t) => {
@@ -240,6 +241,7 @@ function wireInput(view: PageView, inputLayer: HTMLElement): void {
   const router = new PointerRouter({
     onPenActiveChange: (active) => {
       view.root.classList.toggle("sc-pen-active", active);
+      anyPenActive = active;
     },
     onDrawStart: (e) => onDrawStart(e, view),
     onDrawMove: (e) => onDrawMove(e, view),
@@ -396,6 +398,51 @@ document.addEventListener("keydown", (e) => {
     else undo();
   }
 });
+
+// --- Manual single-finger scroll ---
+//
+// touch-action is "none" on every input layer (see styles.css for why:
+// touch-action is locked in at first contact, so toggling a class after a
+// palm lands is too late to hand a scroll back to the browser mid-gesture).
+// That means the browser will never scroll for us on touch, so we drive it
+// ourselves here -- gated on no pen being active, so a resting palm while
+// actually writing still can't scroll the page.
+let scrollTouchId: number | null = null;
+let lastScrollY = 0;
+
+scrollEl.addEventListener(
+  "pointerdown",
+  (e) => {
+    if (e.pointerType !== "touch") return;
+    if (anyPenActive) return;
+    if (scrollTouchId !== null) return; // already tracking one finger; ignore a 2nd
+    scrollTouchId = e.pointerId;
+    lastScrollY = e.clientY;
+  },
+  { capture: true }
+);
+
+scrollEl.addEventListener(
+  "pointermove",
+  (e) => {
+    if (e.pointerId !== scrollTouchId) return;
+    if (anyPenActive) {
+      // pen became active mid-drag (e.g. hovered in): stop scrolling instantly.
+      scrollTouchId = null;
+      return;
+    }
+    const dy = e.clientY - lastScrollY;
+    lastScrollY = e.clientY;
+    scrollEl.scrollTop -= dy;
+  },
+  { capture: true }
+);
+
+function endScrollTouch(e: PointerEvent): void {
+  if (e.pointerId === scrollTouchId) scrollTouchId = null;
+}
+scrollEl.addEventListener("pointerup", endScrollTouch, { capture: true });
+scrollEl.addEventListener("pointercancel", endScrollTouch, { capture: true });
 
 // --- Ask tool selection overlay ---
 
