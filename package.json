@@ -1,15 +1,24 @@
 {
-  "name": "sc-tmp",
+  "name": "study-canvas",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "jsdom": "^30.1.1",
     "typescript": "~6.0.2",
-    "vite": "^8.3.0"
+    "vite": "^8.3.0",
+    "vite-plugin-pwa": "^1.2.1",
+    "vitest": "^3.2.0"
+  },
+  "dependencies": {
+    "idb": "^8.0.0",
+    "perfect-freehand": "^1.2.2"
   }
 }

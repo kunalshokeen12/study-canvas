@@ -1,0 +1,189 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overscroll-behavior: contain; /* no pull-to-refresh */
+  background: #2b2b3a;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sc-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
+  background: #1a1a2e;
+  color: #fff;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.sc-toolbar-group {
+  display: flex;
+  gap: 4px;
+  padding-right: 8px;
+  border-right: 1px solid #3a3a55;
+}
+.sc-toolbar-group:last-child {
+  border-right: none;
+}
+
+.sc-toolbar button {
+  background: #2e2e48;
+  color: #fff;
+  border: 1px solid #44446a;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.sc-toolbar button.active {
+  background: #4a5cff;
+  border-color: #4a5cff;
+}
+.sc-toolbar button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.sc-color-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  padding: 0 !important;
+}
+
+.sc-scroll-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  touch-action: pan-y pinch-zoom;
+  background: #444;
+}
+
+.sc-page {
+  position: relative;
+  margin: 16px auto;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.sc-page.sc-pen-active canvas,
+.sc-page.sc-pen-active {
+  touch-action: none;
+}
+
+.sc-tile {
+  display: block;
+  pointer-events: none;
+}
+
+.sc-live-layer,
+.sc-overlay-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}
+
+.sc-input-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+
+.sc-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 100;
+}
+
+.sc-sheet {
+  background: #fff;
+  width: 100%;
+  max-width: 480px;
+  border-radius: 16px 16px 0 0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.sc-sheet-preview {
+  max-width: 100%;
+  max-height: 240px;
+  object-fit: contain;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  align-self: center;
+}
+
+.sc-sheet-note {
+  width: 100%;
+  font-size: 14px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  resize: vertical;
+}
+
+.sc-sheet-status {
+  font-size: 13px;
+  color: #555;
+  min-height: 1.2em;
+}
+
+.sc-sheet-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sc-btn-primary,
+.sc-btn-secondary {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+}
+.sc-btn-primary {
+  background: #4a5cff;
+  color: #fff;
+}
+.sc-btn-secondary {
+  background: #eee;
+  color: #333;
+}
+.sc-btn-primary:disabled,
+.sc-btn-secondary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+canvas.sc-select-active {
+  cursor: crosshair;
+}
